@@ -1,8 +1,31 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import nextId from 'react-id-generator';
 
 function Table() {
   const [posts, setPosts] = useState([]);
+  const [newPost, setNewPostFields] = useState({
+    userId: 10,
+    title: '',
+    body : ''
+  });
+   
+  const handleFormInput = (field) => (evt) => {
+    evt.preventDefault();
+    setNewPostFields({...newPost, [field]: evt.target.value});
+  }
+
+  const handleFormSubmit = (evt) => {
+    evt.preventDefault();
+    const post = {id: nextId(), ...newPost};
+    
+    setPosts([...posts, post]);
+    setNewPostFields({
+      userId: 10,
+      title: '',
+      body : ''
+    })
+  }
 
   const fetchUrl = "https://jsonplaceholder.typicode.com/posts";
   useEffect(() => {
@@ -54,15 +77,17 @@ function Table() {
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              <form>
+              <form onSubmit={handleFormSubmit}>
                 <div className="mb-3">
                   <label className="form-label">User ID</label>
                   <input
                     type="text"
                     className="form-control"
                     name="userId"
+                    placeholder={newPost.userId}
                     required
                     disabled
+                    onChange={handleFormInput('userId')}
                   />
                 </div>
                 <div className="mb-3">
@@ -73,6 +98,7 @@ function Table() {
                     name="title"
                     placeholder="title"
                     required
+                    onChange={handleFormInput('title')}
                   />
                 </div>
                 <div className="mb-3">
@@ -84,6 +110,7 @@ function Table() {
                     name="body"
                     placeholder="body"
                     required
+                    onChange={handleFormInput('body')}
                   ></textarea>
                 </div>
                 <div className="modal-footer d-block">
